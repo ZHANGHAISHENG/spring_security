@@ -8,9 +8,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.util.AntPathMatcher;
 
 @Configuration
 @EnableResourceServer
@@ -28,6 +33,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Autowired
+    private LogoutSuccessHandler logoutSuccessHandler;
 
 
     @Override
@@ -47,8 +54,14 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 //登录提交action，app会用到
                 // 用户名登录地址
                 .loginProcessingUrl("/form/token")
+                //.passwordParameter("password")
+                //.usernameParameter("username")
                 .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler);
+                .failureHandler(authenticationFailureHandler)
+                .and()
+                .logout()
+               // .logoutUrl("/logout")
+                .logoutSuccessHandler(logoutSuccessHandler);
 
         http//.apply(validateCodeSecurityConfig)
                 //	.and()
@@ -66,7 +79,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(
-                        "/loginOut/**",
+                        "/loginOutTest/**",
                         "/oauth/**",
                         "/token/refresh",
                         "/register",

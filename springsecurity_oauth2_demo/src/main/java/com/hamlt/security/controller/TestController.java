@@ -57,7 +57,7 @@ public class TestController {
         return authorizationServerTokenServices.refreshAccessToken(refreshToken, tokenRequest);
     }
 
-    @RequestMapping("/loginOut")
+    @RequestMapping("/loginOutTest")
     public String loginOut(HttpServletRequest request) {
       String token =  request.getHeader("token");
       boolean b = consumerTokenServices.revokeToken(token);

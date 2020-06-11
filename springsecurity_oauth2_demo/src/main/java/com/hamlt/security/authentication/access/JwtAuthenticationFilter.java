@@ -9,12 +9,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -48,11 +51,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             ResourceServerTokenServices resourceServerTokenServices = authorizationServerEndpointsConfiguration.getEndpointsConfigurer().getResourceServerTokenServices();
             OAuth2Authentication oAuth2Authentication = resourceServerTokenServices.loadAuthentication(token);
 
-            String username = (String) oAuth2Authentication.getPrincipal();
+            String username = ((User) oAuth2Authentication.getPrincipal()).getUsername();
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+           // SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+
         super.doFilter(request, response, filterChain);
     }
 

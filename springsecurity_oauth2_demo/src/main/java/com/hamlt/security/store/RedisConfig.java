@@ -1,4 +1,4 @@
-package com.hamlt.security.config;
+package com.hamlt.security.store;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachingConfigurerSupport;

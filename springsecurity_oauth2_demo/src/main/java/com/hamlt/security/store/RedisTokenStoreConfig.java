@@ -1,4 +1,4 @@
-package com.hamlt.security.config;
+package com.hamlt.security.store;
 
 import com.hamlt.security.jwt.CustomAccessTokenConverter;
 import com.hamlt.security.jwt.JwtTokenEnhancer;

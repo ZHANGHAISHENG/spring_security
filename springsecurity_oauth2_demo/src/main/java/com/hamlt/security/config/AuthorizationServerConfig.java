@@ -1,8 +1,13 @@
 package com.hamlt.security.config;
 
+import com.hamlt.security.authentication.access.AuthExceptionEntryPoint;
+import com.hamlt.security.authentication.access.CustomAccessDeniedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +19,16 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.http.SecurityHeaders;
+import org.springframework.security.web.server.authorization.AuthorizationWebFilter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * ClientCredentialsTokenEndpointFilter
@@ -48,6 +63,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private TokenEnhancer jwtTokenEnhancer;
 
+    @Autowired
+    private AuthExceptionEntryPoint authExceptionEntryPoint;
+
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
@@ -60,7 +81,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 //接收GET和POST
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST);
 
-            //1、设置token为jwt形式
+        //1、设置token为jwt形式
             //2、设置jwt 拓展认证信息
             // TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
             // List<TokenEnhancer> enhancers = new ArrayList<TokenEnhancer>();
@@ -72,7 +93,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-       // 采用委托的加密相当于： String finalSecret = "{bcrypt}" + new BCryptPasswordEncoder().encode("123456");
+
+        // 采用委托的加密相当于： String finalSecret = "{bcrypt}" + new BCryptPasswordEncoder().encode("123456");
         clients.inMemory()//配置内存中，也可以是数据库
                 .withClient("c1")//clientid
                 //.secret("s1")
@@ -92,7 +114,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
         // 允许直接使用内部的TokenEndpoint 接口获取token
-        oauthServer.allowFormAuthenticationForClients();
+        oauthServer.allowFormAuthenticationForClients()
+        .authenticationEntryPoint(authExceptionEntryPoint)
+        .accessDeniedHandler(customAccessDeniedHandler);
     }
 
 
