@@ -1,13 +1,9 @@
 package com.hamlt.security.config;
 
-import com.hamlt.security.authentication.access.AuthExceptionEntryPoint;
-import com.hamlt.security.authentication.access.CustomAccessDeniedHandler;
+import com.hamlt.security.authentication.access.MyAccessDeniedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,16 +15,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.expression.WebExpressionVoter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.http.SecurityHeaders;
-import org.springframework.security.web.server.authorization.AuthorizationWebFilter;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * ClientCredentialsTokenEndpointFilter
@@ -64,14 +50,13 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private TokenEnhancer jwtTokenEnhancer;
 
     @Autowired
-    private AuthExceptionEntryPoint authExceptionEntryPoint;
-
-    @Autowired
-    private CustomAccessDeniedHandler customAccessDeniedHandler;
+    private MyAccessDeniedHandler myAccessDeniedHandler;
 
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+
+        // endpoints.exceptionTranslator(new MyDefaultWebResponseExceptionTranslator()); 设置不起作用，直接set到MyAuthExceptionEntryPoint
         //使用Redis作为Token的存储
         endpoints
                 .tokenStore(redisTokenStore)
@@ -111,14 +96,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .scopes("all");
     }
 
+
+
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
         // 允许直接使用内部的TokenEndpoint 接口获取token
-        oauthServer.allowFormAuthenticationForClients()
-        .authenticationEntryPoint(authExceptionEntryPoint)
-        .accessDeniedHandler(customAccessDeniedHandler);
+        oauthServer.allowFormAuthenticationForClients();
+        /*.authenticationEntryPoint(new MyAuthExceptionEntryPoint()) // 根据OAuth2AuthenticationProcessingFilter引用追踪配置在这个地方无效
+        .accessDeniedHandler(myAccessDeniedHandler);*/
     }
-
-
 
 }
