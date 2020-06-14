@@ -49,6 +49,11 @@ public class TestController {
         return user;
     }
 
+    @RequestMapping("/test3")
+    public Object test3(HttpServletRequest request) throws UnsupportedEncodingException {
+        return "test3";
+    }
+
     @RequestMapping("/token/refresh")
     public OAuth2AccessToken refreshToken(String refreshToken, HttpServletRequest request) {
         String clientId = request.getHeader("clientId");

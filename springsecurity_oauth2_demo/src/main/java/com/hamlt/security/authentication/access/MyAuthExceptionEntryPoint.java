@@ -15,8 +15,7 @@ import java.io.IOException;
  * @date 2020-06-12 1:32
  **/
 @Component
-public class MyAuthExceptionEntryPoint  extends OAuth2AuthenticationEntryPoint
-{
+public class MyAuthExceptionEntryPoint  extends OAuth2AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {

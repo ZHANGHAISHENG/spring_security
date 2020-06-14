@@ -17,9 +17,10 @@
  
  访问需要登录的资源：
  -- 自定义授权filter
- curl 127.0.0.1:10030/test2 -X GET -H 'token:0dc17c0d-7737-4f8e-8973-59a431b7dd4a'
+ curl 127.0.0.1:10030/test2 -X GET -H 'token:eced59b7-d72b-473b-bcfc-bce581be1ce1'
  -- 内部授权filter
- curl 127.0.0.1:10030/test2 -X GET -H 'Authorization:Bearer 0dc17c0d-7737-4f8e-8973-59a431b7dd4a'
+ curl 127.0.0.1:10030/test2 -X GET -H 'Authorization:Bearer 1fc8b6c3-326b-407b-a1a9-219ef0f56707'
+ curl 127.0.0.1:10030/test2 -X GET -H 'Authorization:1fc8b6c3-326b-407b-a1a9-219ef0f56707'
 
  
 用户名密码获取token fielter: 
@@ -28,10 +29,11 @@ ClientCredentialsTokenEndpointFilter: 校验clientId、clientSecret
   ProviderManager(client_id) -> TokenEndpoint -> ResourceOwnerPasswordTokenGranter -> ProviderManager(username) -> DaoAuthenticationProvider
 /form/token （可自定义username、password名称）
 UsernamePasswordAuthenticationFilter: 校验用户名密码
-  ProviderManager -> DaoAuthenticationProvider (DelegatingPasswordEncoder（根据密码加密前缀来匹配对应的密码加密器）、UserDetailsService)
+  ProviderManager -> DaoAuthenticationProvider (默认：DelegatingPasswordEncoder（根据密码加密前缀来匹配对应的密码加密器）、UserDetailsService)
 
 密码加密器： 
-DelegatingPasswordEncoder -> BCryptPasswordEncoder
+自定义加密器：implements PasswordEncoder (InitializeUserDetailsBeanManagerConfigurer 创建DaoAuthenticationProvider，尝试从applicationContext获取)
+默认加密器：DelegatingPasswordEncoder -> BCryptPasswordEncoder
  加密后格式：{bcrypt}$2a$10$YK8.eVVAL/NxyZ
  还有其他的加密器：
  {pbkdf2}5d923b44a6d129f3ddf3e
@@ -40,7 +42,7 @@ DelegatingPasswordEncoder -> BCryptPasswordEncoder
 自定义密码加密器：WebSecurityConfig -> @Bean(PasswordEncoder passwordEncoder())
  
 自定义token 存储管理（进入OAuth Api） extends SavedRequestAwareAuthenticationSuccessHandler 调取OAuth2 RedisTokenStore JtwTokenStore(不会持久化用户信息)等类存储
-  
+
 自定义增加返回字段：implements TokenEnhancer
 
 自定义JtwTokenStore减少jwt token存储信息（防止token太长），增加的自定义的字段还是会返回：extends DefaultAccessTokenConverter （设置到JwtAccessTokenConverter(TokenEnhancer子类)）
@@ -61,11 +63,16 @@ token自动续签：
 
 权限默认filter: 
 OAuth2AuthenticationProcessingFilter extends OncePerRequestFilter
-   BearerTokenExtractor： 
-     解析header Authorization:Bearer
+   token获取执行器：
+     默认：BearerTokenExtractor：解析header Authorization:Bearer (格式：'Authorization:Bearer 1fc8b6c3-326b-407b-a1a9-219ef0f56707')
+	 自定义：implements TokenExtractor
+   	 
 	 
-   异常处理(clientSecret错误、token错误、权限不足)：
-     OAuth2AuthenticationEntryPoint（DefaultWebResponseExceptionTranslator：默认异常处理类）
+   自定义token异常处理(clientSecret错误、token错误)：
+     extends OAuth2AuthenticationEntryPoint(默认token异常处理)（DefaultWebResponseExceptionTranslator：默认异常处理类）
+	 
+   自定义权限不足处理：
+      implements AccessDeniedHandler	
    
    权限校验投票管理器：
      AffirmativeBased（有一个投票通过就通过） extends AbstractAccessDecisionManager decide() ->  WebExpressionVoter vote()

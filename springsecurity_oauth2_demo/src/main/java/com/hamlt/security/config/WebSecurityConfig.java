@@ -1,5 +1,6 @@
 package com.hamlt.security.config;
 
+import com.hamlt.security.encoder.MyPasswordEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,7 +16,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        // return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+         return new MyPasswordEncoder();
     }
 
     /**

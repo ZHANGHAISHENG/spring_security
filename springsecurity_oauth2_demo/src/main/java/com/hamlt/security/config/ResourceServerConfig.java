@@ -5,16 +5,20 @@ import com.hamlt.security.authentication.access.MyAccessDeniedHandler;
 import com.hamlt.security.authentication.access.MyAuthExceptionEntryPoint;
 import com.hamlt.security.authentication.access.MyDefaultWebResponseExceptionTranslator;
 import com.hamlt.security.authentication.mobile.SmsCodeAuthenticationSecurityConfig;
+import com.hamlt.security.extractor.MyTokenExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -40,6 +44,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
+
         /**配置token或权限异不足异常处理**/
         MyAuthExceptionEntryPoint myAuthExceptionEntryPoint = new MyAuthExceptionEntryPoint();
         //myAuthExceptionEntryPoint commence方法未使用到translator
@@ -47,13 +52,14 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         myAuthExceptionEntryPoint.setExceptionTranslator(new MyDefaultWebResponseExceptionTranslator());
         resources.authenticationEntryPoint(myAuthExceptionEntryPoint)
         .accessDeniedHandler(new MyAccessDeniedHandler());
+        /**配置默认的token解析**/
+        resources.tokenExtractor(new MyTokenExtractor());
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-
       // 配置token认证filter
-      //  http.addFilterBefore(myAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(myAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         //todo:注意：spring-security formlogin其实就是一个登录页加上一个提交action组成的，
         // 所以在我们的app登录的时候我们只要提交的action，不要跳转到登录页
         http.formLogin()
@@ -89,6 +95,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers(
                         "/loginOutTest/**",
                         "/oauth/**",
+                        "/test3",
                         "/token/refresh",
                         "/register",
                         "/social/**",

@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.endpoint.AuthorizationEndpoint;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
@@ -86,6 +87,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret(passwordEncoder.encode("123456"))
                 .accessTokenValiditySeconds(3600)//token有效时间  秒
                 .refreshTokenValiditySeconds(3600 * 24)
+                .redirectUris("http://example.com")
+
                 .authorizedGrantTypes("refresh_token", "password", "authorization_code")//token模式
                 .scopes("all")//限制允许的权限配置
 
@@ -100,6 +103,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
+
         // 允许直接使用内部的TokenEndpoint 接口获取token
         oauthServer.allowFormAuthenticationForClients();
         /*.authenticationEntryPoint(new MyAuthExceptionEntryPoint()) // 根据OAuth2AuthenticationProcessingFilter引用追踪配置在这个地方无效
