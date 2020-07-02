@@ -1,6 +1,7 @@
 package com.hamlt.security.config;
 
 import com.hamlt.security.authentication.access.MyAccessDeniedHandler;
+import com.hamlt.security.service.ApiUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -36,7 +37,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private ApiUserDetailsService userDetailsService;
 
     @Autowired
     private TokenStore redisTokenStore;
@@ -92,7 +93,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authorizedGrantTypes("refresh_token", "password", "authorization_code")//token模式
                 .scopes("all")//限制允许的权限配置
 
-                .and()//下面配置第二个应用   （不知道动态的是怎么配置的，那就不能使用内存模式，应该使用数据库模式来吧）
+                .and()//下面配置第二个应用
                 .withClient("test")
                 .scopes("testSc")
                 .accessTokenValiditySeconds(7200)
