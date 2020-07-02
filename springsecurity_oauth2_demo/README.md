@@ -85,3 +85,13 @@ OAuth2AuthenticationProcessingFilter extends OncePerRequestFilter
  eval "return redis.call('del',unpack(redis.call('keys',ARGV[1])))" 0 '*'
  
  
+ 
+ code 模式：
+ https://blog.csdn.net/u014730165/article/details/83181754
+ 
+ 获取code:
+ http://localhost:8080/oauth/authorize?response_type=code&client_id=c1&redirect_uri=http://example.com&scop=all
+ 
+ code换取token:
+ curl -X POST http://localhost:8080/oauth/token -d "grant_type=authorization_code&code=mzlMEL&client_id=c1&client_secret=123456&redirect_uri=http://example.com"  
+ 

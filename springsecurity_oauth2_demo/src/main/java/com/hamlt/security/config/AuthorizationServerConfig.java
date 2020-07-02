@@ -76,6 +76,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             // enhancers.add(jwtAccessTokenConverter);
             // enhancerChain.setTokenEnhancers(enhancers);
             // endpoints.tokenEnhancer(enhancerChain).accessTokenConverter(jwtAccessTokenConverter);
+
     }
 
     @Override
@@ -109,6 +110,15 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         oauthServer.allowFormAuthenticationForClients();
         /*.authenticationEntryPoint(new MyAuthExceptionEntryPoint()) // 根据OAuth2AuthenticationProcessingFilter引用追踪配置在这个地方无效
         .accessDeniedHandler(myAccessDeniedHandler);*/
+
+        oauthServer
+                .realm("oauth2-resources")
+                //url:/oauth/token_key,exposes public key for token verification if using JWT tokens
+                .tokenKeyAccess("permitAll()")
+                //url:/oauth/check_token allow check token
+                .checkTokenAccess("isAuthenticated()")
+                .allowFormAuthenticationForClients();
+
     }
 
 }
