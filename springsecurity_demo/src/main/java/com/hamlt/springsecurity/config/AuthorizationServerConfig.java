@@ -34,8 +34,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
                 //client模式
                 .withClient("c1")
-                .authorizedGrantTypes("password", "client_credentials", "refresh_token")
-                .scopes("select")
+                .authorizedGrantTypes("authorization_code", "password", "client_credentials", "refresh_token")
+                .scopes("all")
                 .authorities("oauth2")
                 .secret(finalSecret)
 

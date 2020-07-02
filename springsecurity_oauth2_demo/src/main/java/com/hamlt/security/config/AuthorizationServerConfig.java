@@ -83,12 +83,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         // 采用委托的加密相当于： String finalSecret = "{bcrypt}" + new BCryptPasswordEncoder().encode("123456");
         clients.inMemory()//配置内存中，也可以是数据库
                 .withClient("c1")//clientid
-                //.secret("s1")
                 .secret(passwordEncoder.encode("123456"))
                 .accessTokenValiditySeconds(3600)//token有效时间  秒
                 .refreshTokenValiditySeconds(3600 * 24)
                 .redirectUris("http://example.com")
-
                 .authorizedGrantTypes("refresh_token", "password", "authorization_code")//token模式
                 .scopes("all")//限制允许的权限配置
 
