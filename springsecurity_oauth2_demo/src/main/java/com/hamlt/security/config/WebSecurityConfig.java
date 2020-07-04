@@ -42,6 +42,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-
+        // code 模式时，不配置会被拦截
+        httpSecurity.httpBasic().and().authorizeRequests()
+                .antMatchers("/oauth/**","/login")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and().csrf().disable();
     }
 }

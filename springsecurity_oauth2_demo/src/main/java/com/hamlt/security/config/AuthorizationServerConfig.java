@@ -1,11 +1,11 @@
 package com.hamlt.security.config;
 
 import com.hamlt.security.authentication.access.MyAccessDeniedHandler;
+import com.hamlt.security.service.ApiUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -36,7 +36,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private ApiUserDetailsService userDetailsService;
 
     @Autowired
     private TokenStore redisTokenStore;
@@ -56,8 +56,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-
-        // endpoints.exceptionTranslator(new MyDefaultWebResponseExceptionTranslator()); 设置不起作用，直接set到MyAuthExceptionEntryPoint
         //使用Redis作为Token的存储
         endpoints
                 .tokenStore(redisTokenStore)
@@ -75,6 +73,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             // enhancers.add(jwtAccessTokenConverter);
             // enhancerChain.setTokenEnhancers(enhancers);
             // endpoints.tokenEnhancer(enhancerChain).accessTokenConverter(jwtAccessTokenConverter);
+
     }
 
     @Override
@@ -87,10 +86,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .accessTokenValiditySeconds(3600)//token有效时间  秒
                 .refreshTokenValiditySeconds(3600 * 24)
                 .redirectUris("http://example.com")
-                .authorizedGrantTypes("refresh_token", "password", "authorization_code")//token模式
+                .authorizedGrantTypes("authorization_code", "client_credentials", "refresh_token", "password", "implicit")
                 .scopes("all")//限制允许的权限配置
-
-                .and()//下面配置第二个应用   （不知道动态的是怎么配置的，那就不能使用内存模式，应该使用数据库模式来吧）
+                //下面配置第二个应用
+                .and()
                 .withClient("test")
                 .scopes("testSc")
                 .accessTokenValiditySeconds(7200)
@@ -101,11 +100,15 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
-
         // 允许直接使用内部的TokenEndpoint 接口获取token
         oauthServer.allowFormAuthenticationForClients();
-        /*.authenticationEntryPoint(new MyAuthExceptionEntryPoint()) // 根据OAuth2AuthenticationProcessingFilter引用追踪配置在这个地方无效
-        .accessDeniedHandler(myAccessDeniedHandler);*/
+        /*oauthServer
+                .realm("oauth2-resources")
+                //url:/oauth/token_key,exposes public key for token verification if using JWT tokens
+                .tokenKeyAccess("permitAll()")
+                //url:/oauth/check_token allow check token
+                .checkTokenAccess("isAuthenticated()")
+                .allowFormAuthenticationForClients();*/
     }
 
 }

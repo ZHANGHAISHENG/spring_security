@@ -1,26 +1,26 @@
  
  token获取：
  -- 自定义filter
- curl 127.0.0.1:10030/form/token -X POST -d 'username=zhs'  -d 'password=123456' -H 'clientId:c1' -H 'clientSecret:123456'
+ curl 127.0.0.1:8080/form/token -X POST -d 'username=zhs'  -d 'password=123456' -H 'clientId:c1' -H 'clientSecret:123456'
  -- 内部controller
- curl 127.0.0.1:10030/oauth/token?client_id=c1\&client_secret=123456\&grant_type=password\&username=zhs\&password=123456
+ curl 127.0.0.1:8080/oauth/token?client_id=c1\&client_secret=123456\&grant_type=password\&username=zhs\&password=123456
 
  token刷新：
  -- 自定义controller
- curl 127.0.0.1:10030/token/refresh -X POST  -H 'clientId:c1' -d 'refreshToken=d9478ae0-bb07-47de-b1d5-b55200da0410'
+ curl 127.0.0.1:8080/token/refresh -X POST  -H 'clientId:c1' -d 'refreshToken=d9478ae0-bb07-47de-b1d5-b55200da0410'
  -- 内部controller
  curl 127.0.0.1:8081/oauth/token?client_id=c1\&client_secret=123456\&grant_type=refresh_token\&refresh_token=5709e974-6d43-47e3-9a30-9d7e3c495ad0
 
  退出登录：
- curl 127.0.0.1:10030/loginOutTest -X POST -H 'token:586523f1-f3c1-4867-a2c1-b2daf71bb71e'
- curl 127.0.0.1:10030/logout -X GET -H 'token:d786d3dc-beeb-4d44-9a04-4ac6ad524570'
+ curl 127.0.0.1:8080/loginOutTest -X POST -H 'token:586523f1-f3c1-4867-a2c1-b2daf71bb71e'
+ curl 127.0.0.1:8080/logout -X GET -H 'token:d786d3dc-beeb-4d44-9a04-4ac6ad524570'
  
  访问需要登录的资源：
  -- 自定义授权filter
- curl 127.0.0.1:10030/test2 -X GET -H 'token:eced59b7-d72b-473b-bcfc-bce581be1ce1'
+ curl 127.0.0.1:8080/test2 -X GET -H 'token:eced59b7-d72b-473b-bcfc-bce581be1ce1'
  -- 内部授权filter
- curl 127.0.0.1:10030/test2 -X GET -H 'Authorization:Bearer 1fc8b6c3-326b-407b-a1a9-219ef0f56707'
- curl 127.0.0.1:10030/test2 -X GET -H 'Authorization:1fc8b6c3-326b-407b-a1a9-219ef0f56707'
+ curl 127.0.0.1:8080/test2 -X GET -H 'Authorization:Bearer 41f78007-e2ec-4978-9beb-a830b638d4d8'
+ curl 127.0.0.1:8080/test2 -X GET -H 'Authorization:663663ff-ea06-46f7-888a-9076063c95bc'
 
  
 用户名密码获取token fielter: 
@@ -84,4 +84,33 @@ OAuth2AuthenticationProcessingFilter extends OncePerRequestFilter
 删除redis所有key value:
  eval "return redis.call('del',unpack(redis.call('keys',ARGV[1])))" 0 '*'
  
+
+其他模式： 
+ 
+ 
+code 模式：
+ 
+ 获取code:
+ http://localhost:8080/oauth/authorize?response_type=code&client_id=c1&redirect_uri=http://example.com&scop=all
+ 
+ code换取token:
+ curl -X POST http://localhost:8080/oauth/token -d "grant_type=authorization_code&code=WZyL26&client_id=c1&client_secret=123456&redirect_uri=http://example.com"  
+ 
+ BasicAuthenticationFilter BasicAuthenticationConverter
+ 
+implicit 模式：
+  获取token
+  http://localhost:8080/oauth/authorize?response_type=token&client_id=c1&redirect_uri=http://example.com
+ 
+  响应：
+  http://example.com/#access_token=d8942ec1-fe6f-43f2-bd5c-d183d4336f61&token_type=bearer&expires_in=3110&scope=all
+ 
+ 
+client_credentials 模式：
+  获取token: 
+  curl -X GET http://localhost:8080/oauth/token?client_id=c1\&client_secret=123456\&grant_type=client_credentials
+  
+  
+  
+
  

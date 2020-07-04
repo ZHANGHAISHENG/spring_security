@@ -13,10 +13,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.util.StringUtils;
 
 @Configuration
-@ConditionalOnProperty(
-        prefix = "security.oauth2",
-        name = "storeType",
-        havingValue = "jwt")
+@ConditionalOnProperty(prefix = "security.oauth2", name = "storeType", havingValue = "jwt")
 public class JwtTokenStoreConfig {
 
     @Value("${security.jwt.signingKey}")

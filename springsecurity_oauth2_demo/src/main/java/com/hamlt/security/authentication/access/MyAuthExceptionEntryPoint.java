@@ -21,7 +21,7 @@ public class MyAuthExceptionEntryPoint  extends OAuth2AuthenticationEntryPoint {
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         e.printStackTrace();
         httpServletResponse.setContentType("application/json;charset=UTF-8");
-        httpServletResponse.getWriter().write("token无效或已过期！");
+        httpServletResponse.getWriter().write(e.getMessage());
     }
 
 }
