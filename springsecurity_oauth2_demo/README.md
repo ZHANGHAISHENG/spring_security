@@ -91,11 +91,16 @@ OAuth2AuthenticationProcessingFilter extends OncePerRequestFilter
 code 模式：
  
  获取code:
- http://localhost:8080/oauth/authorize?response_type=code&client_id=c1&redirect_uri=http://example.com&scop=all
+ http://localhost:8080/oauth/authorize?response_type=code&client_id=c1&redirect_uri=http://example.com&scope=all
  
  code换取token:
  curl -X POST http://localhost:8080/oauth/token -d "grant_type=authorization_code&code=WZyL26&client_id=c1&client_secret=123456&redirect_uri=http://example.com"  
  
+ 生成：Authorization: Basic emhzOjEyMzQ1Ng==
+ BasicAuthenticationEntryPoint WWW-Authenticate: Basic realm=""
+     https://blog.csdn.net/neweastsun/article/details/80616161
+ 
+ 解析：Authorization: Basic emhzOjEyMzQ1Ng==
  BasicAuthenticationFilter BasicAuthenticationConverter
  
 implicit 模式：
@@ -110,7 +115,11 @@ client_credentials 模式：
   获取token: 
   curl -X GET http://localhost:8080/oauth/token?client_id=c1\&client_secret=123456\&grant_type=client_credentials
   
-  
-  
 
- 
+手动模拟获取code请求：
+  1：获取Authorization:  base64(username:password)
+     Authorization: Basic emhzOjEyMzQ1Ng==
+  2: 获取JSESSIONID：
+     curl -i -X GET -H 'Authorization: Basic emhzOjEyMzQ1Ng==' http://localhost:8080/oauth/authorize?response_type=code\&client_id=c1\&redirect_uri=http://example.com\&scope=all  --cookie 'JSESSIONID=B5ABC2CCD54B200B8032232498AEBB9E'
+  3：获取code:(JSESSIONID一次性使用)
+     curl -i -X POST http://localhost:8080/oauth/authorize  -H 'Authorization: Basic emhzOjEyMzQ1Ng==' -d "user_oauth_approval=true&scope.all=true&authorize=Authorize" --cookie 'JSESSIONID=B5ABC2CCD54B200B8032232498AEBB9E'
