@@ -5,6 +5,7 @@ import com.hamlt.security.service.ApiUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,16 +51,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private JwtAccessTokenConverter jwtAccessTokenConverter;
-
-    @Autowired
-    private TokenEnhancer jwtTokenEnhancer;
-
-    @Autowired
     private MyAccessDeniedHandler myAccessDeniedHandler;
 
+
     @Autowired
-    private DataSource dataSource;
+    private ClientDetailsService clientDetailsService;
 
 
     @Override
@@ -77,7 +73,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             //2、设置jwt 拓展认证信息
             // TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
             // List<TokenEnhancer> enhancers = new ArrayList<TokenEnhancer>();
-            // enhancers.add(jwtTokenEnhancer);
+            // enhancers.add(new MyTokenEnhancer());
             // enhancers.add(jwtAccessTokenConverter);
             // enhancerChain.setTokenEnhancers(enhancers);
             // endpoints.tokenEnhancer(enhancerChain).accessTokenConverter(jwtAccessTokenConverter);
@@ -103,12 +99,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .accessTokenValiditySeconds(7200)
                 .scopes("all");*/
 
-         clients.withClientDetails(clientDetails());
-    }
-
-    @Bean
-    public ClientDetailsService clientDetails() {
-        return new JdbcClientDetailsService(dataSource);
+         clients.withClientDetails(clientDetailsService);
     }
 
     @Override

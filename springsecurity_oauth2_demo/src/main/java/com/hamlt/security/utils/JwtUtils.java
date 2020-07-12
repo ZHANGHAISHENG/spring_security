@@ -1,4 +1,4 @@
-package com.hamlt.security.jwt;
+package com.hamlt.security.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -17,4 +17,4 @@ security:
   jwt:
     signingKey: zhsSignKey
   oauth2:
-    storeType: redis
+    storeType: jdbc

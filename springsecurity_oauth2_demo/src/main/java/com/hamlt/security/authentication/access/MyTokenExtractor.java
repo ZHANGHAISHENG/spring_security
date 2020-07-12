@@ -1,4 +1,4 @@
-package com.hamlt.security.extractor;
+package com.hamlt.security.authentication.access;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.authentication.TokenExtractor;

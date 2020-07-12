@@ -1,4 +1,4 @@
-package com.hamlt.security.jwt;
+package com.hamlt.security.converter;
 
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -13,7 +13,7 @@ import java.util.Map;
  * @date 2020-06-07 15:25
  **/
 @Component
-public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
+public class MyAccessTokenConverter extends DefaultAccessTokenConverter {
 
     @Override
     public Map<String, ?> convertAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {

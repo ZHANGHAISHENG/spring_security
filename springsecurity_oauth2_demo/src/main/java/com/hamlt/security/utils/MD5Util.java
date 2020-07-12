@@ -1,4 +1,4 @@
-package com.hamlt.security.encoder;
+package com.hamlt.security.utils;
 
 import org.springframework.util.DigestUtils;
 

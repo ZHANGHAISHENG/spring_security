@@ -1,7 +1,7 @@
 package com.hamlt.security.store;
 
-import com.hamlt.security.jwt.CustomAccessTokenConverter;
-import com.hamlt.security.jwt.JwtTokenEnhancer;
+import com.hamlt.security.converter.MyAccessTokenConverter;
+import com.hamlt.security.converter.MyTokenEnhancer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +21,7 @@ public class JwtTokenStoreConfig {
 
     @Bean
     public TokenEnhancer jwtTokenEnhancer() {
-        return new JwtTokenEnhancer();
+        return new MyTokenEnhancer();
     }
 
     @Bean
@@ -39,8 +39,8 @@ public class JwtTokenStoreConfig {
         }
         //密钥，放到配置文件中
         jwtAccessTokenConverter.setSigningKey(signingkey);
-        // CustomAccessTokenConverter 用于删除默认的信息，防止生成的token太长
-        jwtAccessTokenConverter.setAccessTokenConverter(new CustomAccessTokenConverter());
+        // MyAccessTokenConverter 用于删除默认的信息，防止生成的token太长
+        jwtAccessTokenConverter.setAccessTokenConverter(new MyAccessTokenConverter());
         return jwtAccessTokenConverter;
     }
 }
