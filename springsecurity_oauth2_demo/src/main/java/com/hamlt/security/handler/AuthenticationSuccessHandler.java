@@ -64,6 +64,7 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
         response.setContentType("application/json;charset=UTF-8");
 
         response.getWriter().write(objectMapper.writeValueAsString(token));
+
     }
 
 }

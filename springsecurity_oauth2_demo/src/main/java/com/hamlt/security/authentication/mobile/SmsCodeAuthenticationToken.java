@@ -2,13 +2,12 @@ package com.hamlt.security.authentication.mobile;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-
 import java.util.Collection;
 
 // 用户基本信息存储类
 public class SmsCodeAuthenticationToken extends AbstractAuthenticationToken{
 
-    // 用户信息全部放在这里面，如用户名，手机号，密码等
+    // 用户信息全部放在这里面，如用户名，手机号等
     private final Object principal;
     //这里保存的证书信息，如密码，验证码等
     private Object credentials;

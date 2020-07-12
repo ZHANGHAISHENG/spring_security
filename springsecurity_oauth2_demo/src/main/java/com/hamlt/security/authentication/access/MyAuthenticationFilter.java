@@ -15,9 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -50,10 +50,10 @@ public class MyAuthenticationFilter extends OncePerRequestFilter {
             //Claims claims = JwtUtils.parseToken(token, signingkey);
             ResourceServerTokenServices resourceServerTokenServices = authorizationServerEndpointsConfiguration.getEndpointsConfigurer().getResourceServerTokenServices();
             OAuth2Authentication oAuth2Authentication = resourceServerTokenServices.loadAuthentication(token);
-
             String username = ((User) oAuth2Authentication.getPrincipal()).getUsername();
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+            //未进行：authenticationManager.authenticate(authentication)
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

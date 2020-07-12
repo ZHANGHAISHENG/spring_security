@@ -3,6 +3,7 @@ package com.hamlt.security.config;
 import com.hamlt.security.authentication.access.MyAccessDeniedHandler;
 import com.hamlt.security.service.ApiUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,11 +13,14 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.endpoint.AuthorizationEndpoint;
-import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
 
 /**
  * ClientCredentialsTokenEndpointFilter
@@ -54,6 +58,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private MyAccessDeniedHandler myAccessDeniedHandler;
 
+    @Autowired
+    private DataSource dataSource;
+
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
@@ -81,7 +88,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 
         // 采用委托的加密相当于： String finalSecret = "{bcrypt}" + new BCryptPasswordEncoder().encode("123456");
-        clients.inMemory()//配置内存中，也可以是数据库
+        /*clients.inMemory()//配置内存中，也可以是数据库
                 .withClient("c1")//clientid
                 .secret(passwordEncoder.encode("123456"))
                 .accessTokenValiditySeconds(3600)//token有效时间  秒
@@ -94,10 +101,15 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .withClient("test")
                 .scopes("testSc")
                 .accessTokenValiditySeconds(7200)
-                .scopes("all");
+                .scopes("all");*/
+
+         clients.withClientDetails(clientDetails());
     }
 
-
+    @Bean
+    public ClientDetailsService clientDetails() {
+        return new JdbcClientDetailsService(dataSource);
+    }
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) {

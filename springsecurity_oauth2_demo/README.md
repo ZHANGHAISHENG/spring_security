@@ -4,6 +4,9 @@
  curl 127.0.0.1:8080/form/token -X POST -d 'username=zhs'  -d 'password=123456' -H 'clientId:c1' -H 'clientSecret:123456'
  -- 内部controller
  curl 127.0.0.1:8080/oauth/token?client_id=c1\&client_secret=123456\&grant_type=password\&username=zhs\&password=123456
+ -- 手机号码filter
+ curl 127.0.0.1:8080/mobile/token -X POST -d 'mobile=13560742265'  -d 'smsCode=123456' -H 'clientId:c1' -H 'clientSecret:123456'
+
 
  token刷新：
  -- 自定义controller
@@ -12,15 +15,15 @@
  curl 127.0.0.1:8081/oauth/token?client_id=c1\&client_secret=123456\&grant_type=refresh_token\&refresh_token=5709e974-6d43-47e3-9a30-9d7e3c495ad0
 
  退出登录：
- curl 127.0.0.1:8080/loginOutTest -X POST -H 'token:586523f1-f3c1-4867-a2c1-b2daf71bb71e'
- curl 127.0.0.1:8080/logout -X GET -H 'token:d786d3dc-beeb-4d44-9a04-4ac6ad524570'
+ curl 127.0.0.1:8080/loginOutTest -X POST -H 'token:5321cbc2-b3e2-4fba-af7b-ae50c0bbd2e3'
+ curl 127.0.0.1:8080/logout -X GET -H 'token:5321cbc2-b3e2-4fba-af7b-ae50c0bbd2e3'
  
  访问需要登录的资源：
  -- 自定义授权filter
- curl 127.0.0.1:8080/test2 -X GET -H 'token:eced59b7-d72b-473b-bcfc-bce581be1ce1'
+ curl 127.0.0.1:8080/test2 -X GET -H 'token:2faa992c-ffcd-40b8-b3bb-75c8ace90a3f'
  -- 内部授权filter
- curl 127.0.0.1:8080/test2 -X GET -H 'Authorization:Bearer 41f78007-e2ec-4978-9beb-a830b638d4d8'
- curl 127.0.0.1:8080/test2 -X GET -H 'Authorization:663663ff-ea06-46f7-888a-9076063c95bc'
+ curl 127.0.0.1:8080/test2 -X GET -H 'Authorization:Bearer 4cd51b1f-1bfb-4e7c-936e-cc4c7b1b27ed'
+ curl 127.0.0.1:8080/test2 -X GET -H 'Authorization:2faa992c-ffcd-40b8-b3bb-75c8ace90a3f'
 
  
 用户名密码获取token fielter: 
@@ -62,7 +65,8 @@ token自动续签：
 
 
 权限默认filter: 
-OAuth2AuthenticationProcessingFilter extends OncePerRequestFilter
+OAuth2AuthenticationProcessingFilter extends OncePerRequestFilter (默认的也在UsernamePasswordAuthenticationFilter之前)
+ tokenExtractor.extract(request) -> authenticationManager.authenticate(authentication)
    token获取执行器：
      默认：BearerTokenExtractor：解析header Authorization:Bearer (格式：'Authorization:Bearer 1fc8b6c3-326b-407b-a1a9-219ef0f56707')
 	 自定义：implements TokenExtractor
@@ -73,7 +77,7 @@ OAuth2AuthenticationProcessingFilter extends OncePerRequestFilter
 	 
    自定义权限不足处理：
       implements AccessDeniedHandler	
-   
+       
    权限校验投票管理器：
      AffirmativeBased（有一个投票通过就通过） extends AbstractAccessDecisionManager decide() ->  WebExpressionVoter vote()
 	 
@@ -116,6 +120,7 @@ client_credentials 模式：
   curl -X GET http://localhost:8080/oauth/token?client_id=c1\&client_secret=123456\&grant_type=client_credentials
   
 
+
 手动模拟获取code请求：
   1：获取Authorization:  base64(username:password)
      Authorization: Basic emhzOjEyMzQ1Ng==
@@ -123,3 +128,6 @@ client_credentials 模式：
      curl -i -X GET -H 'Authorization: Basic emhzOjEyMzQ1Ng==' http://localhost:8080/oauth/authorize?response_type=code\&client_id=c1\&redirect_uri=http://example.com\&scope=all  --cookie 'JSESSIONID=B5ABC2CCD54B200B8032232498AEBB9E'
   3：获取code:(JSESSIONID一次性使用)
      curl -i -X POST http://localhost:8080/oauth/authorize  -H 'Authorization: Basic emhzOjEyMzQ1Ng==' -d "user_oauth_approval=true&scope.all=true&authorize=Authorize" --cookie 'JSESSIONID=B5ABC2CCD54B200B8032232498AEBB9E'
+
+
+
