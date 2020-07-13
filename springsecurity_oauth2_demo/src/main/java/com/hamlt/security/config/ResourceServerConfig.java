@@ -62,6 +62,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         .accessDeniedHandler(new MyAccessDeniedHandler());
         /**配置默认的token解析**/
         resources.tokenExtractor(new MyTokenExtractor());
+        //resources.stateless(true);
     }
 
     @Override
@@ -99,23 +100,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                         return o;
                     }
                 })
-                .antMatchers(
-                        "/",
-                        "/login",
-                        "/mobile/token",
-                        "/email/token",
-                        "/loginOutTest/**",
-                        "/oauth/**",
-                        "/test3",
-                        "/token/refresh",
-                        "/register",
-                        "/social/**",
-                        "/**/*.js",
-                        "/**/*.css",
-                        "/**/*.jpg",
-                        "/**/*.png",
-                        "/**/*.woff2",
-                        "/code/image")
+                .antMatchers(WhiteConfig.whiteUrls)
                 .permitAll()//以上的请求都不需要认证
                 .anyRequest()
                 .authenticated()
