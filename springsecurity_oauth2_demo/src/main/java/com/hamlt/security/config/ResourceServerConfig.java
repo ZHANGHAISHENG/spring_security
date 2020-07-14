@@ -11,11 +11,13 @@ import com.hamlt.security.authentication.permit.MySecurityMetadataSource;
 import com.hamlt.security.authentication.access.MyTokenExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -42,7 +44,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private LogoutSuccessHandler logoutSuccessHandler;
 
     @Autowired
-    private MyOauth2FilterSecurityInterceptor myOauth2FilterSecurityInterceptor;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private MyAccessDecisionManager accessDecisionManager;
@@ -57,18 +59,22 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         MyAuthExceptionEntryPoint myAuthExceptionEntryPoint = new MyAuthExceptionEntryPoint();
         //myAuthExceptionEntryPoint commence方法未使用到translator
         //在OAuth2AuthenticationEntryPoint commence方法使用到了translator
-        myAuthExceptionEntryPoint.setExceptionTranslator(new MyDefaultWebResponseExceptionTranslator());
+        //myAuthExceptionEntryPoint.setExceptionTranslator(new MyDefaultWebResponseExceptionTranslator());
         resources.authenticationEntryPoint(myAuthExceptionEntryPoint)
         .accessDeniedHandler(new MyAccessDeniedHandler());
         /**配置默认的token解析**/
         resources.tokenExtractor(new MyTokenExtractor());
-        //resources.stateless(true);
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
+        // 不能直接注入
         // 权限过滤器优先度在 FilterSecurityInterceptor 之后，addFilterBefore也能通过
-        //http.addFilterAfter(myOauth2FilterSecurityInterceptor, FilterSecurityInterceptor.class);
+        /*MyOauth2FilterSecurityInterceptor securityInterceptor = new MyOauth2FilterSecurityInterceptor();
+        securityInterceptor.setAuthenticationManager(authenticationManager);
+        securityInterceptor.setSecurityMetadataSource(securityMetadataSource);
+        securityInterceptor.setAccessDecisionManager(accessDecisionManager);
+        http.addFilterAfter(securityInterceptor, FilterSecurityInterceptor.class);*/
         // 配置token认证filter
         http.addFilterBefore(myAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         //todo:注意：spring-security formlogin其实就是一个登录页加上一个提交action组成的，
@@ -107,5 +113,11 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .and()
                 .csrf().disable();
 
+           /* // 自定义异常处理
+            http.exceptionHandling()
+                    .accessDeniedHandler(new MyAccessDeniedHandler())*/
+                    //.authenticationEntryPoint(new MyAuthExceptionEntryPoint()); // token异常不能放这
+
     }
+
 }

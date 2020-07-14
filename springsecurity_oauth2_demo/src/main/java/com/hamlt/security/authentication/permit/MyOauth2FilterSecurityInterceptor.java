@@ -1,5 +1,7 @@
 package com.hamlt.security.authentication.permit;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.SecurityMetadataSource;
@@ -21,24 +23,11 @@ import java.io.IOException;
  *
 **/
 @Slf4j
-@Component
+@Getter
+@Setter
 public class MyOauth2FilterSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private MyAccessDecisionManager accessDecisionManager;
-
-    @Autowired
     private MySecurityMetadataSource securityMetadataSource;
-
-
-    @PostConstruct
-    public void postConstruct() {
-        super.setAuthenticationManager(authenticationManager);
-        super.setAccessDecisionManager(accessDecisionManager);
-    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {

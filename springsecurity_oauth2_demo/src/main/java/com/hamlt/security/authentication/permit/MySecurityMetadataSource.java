@@ -27,8 +27,10 @@ public class MySecurityMetadataSource implements FilterInvocationSecurityMetadat
         //  List<Menu> menuList = menuMapper.findAllMenu();
         //  antPathMatcher.match(menu.getUrl(),requestUrl)
         //  return SecurityConfig.createList(roleNameArray);
-        if(Arrays.asList(WhiteConfig.whiteUrls).contains(requestUrl)) {
-            return null;
+        for(String s : WhiteConfig.whiteUrls) {
+            if(antPathMatcher.match(s, requestUrl)) {
+                return null;
+            }
         }
         return SecurityConfig.createList("ROLE_USER");
     }

@@ -3,7 +3,9 @@ package com.hamlt.security.config;
 public class WhiteConfig {
 
     public static String[] whiteUrls = new String[]{
+            "/error",
             "/login",
+            "/form/token",
             "/mobile/token",
             "/email/token",
             "/loginOutTest/**",

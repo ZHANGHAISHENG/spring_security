@@ -5,6 +5,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.hamlt.security.service.ApiUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,7 +30,7 @@ public class MyAuthenticationFilter extends OncePerRequestFilter {
     private String signingkey;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private ApiUserDetailsService userDetailsService;
 
     @Autowired
     private AuthorizationServerTokenServices authorizationServerTokenServices;

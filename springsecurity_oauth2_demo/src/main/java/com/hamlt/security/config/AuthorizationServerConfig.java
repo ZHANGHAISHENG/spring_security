@@ -42,17 +42,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private ApiUserDetailsService userDetailsService;
+     private ApiUserDetailsService userDetailsService;
 
     @Autowired
     private TokenStore redisTokenStore;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private MyAccessDeniedHandler myAccessDeniedHandler;
-
 
     @Autowired
     private ClientDetailsService clientDetailsService;
@@ -63,7 +56,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         //使用Redis作为Token的存储
         endpoints
                 .tokenStore(redisTokenStore)
-                .userDetailsService(userDetailsService)
+                .userDetailsService(userDetailsService) // 可以不配置userDetailsService 声明了@Component
                 //启用oauth2管理
                 .authenticationManager(authenticationManager) // 允许直接使用内部的TokenEndpoint 接口获取token
                 //接收GET和POST
