@@ -101,11 +101,12 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
                     @Override
                     public <O extends FilterSecurityInterceptor> O postProcess(O o) {
-                        o.setSecurityMetadataSource(securityMetadataSource);
-                        o.setAccessDecisionManager(accessDecisionManager);
+                       o.setSecurityMetadataSource(securityMetadataSource);
+                       o.setAccessDecisionManager(accessDecisionManager);
                         return o;
                     }
                 })
+                //.antMatchers("/test2/*").access("hasRole('ROLE_USER')") // ExpressionBasedFilterInvocationSecurityMetadataSource -> AffirmativeBased -> WebExpressionVoter ->  WebExpressionConfigAttribute
                 .antMatchers(WhiteConfig.whiteUrls)
                 .permitAll()//以上的请求都不需要认证
                 .anyRequest()
