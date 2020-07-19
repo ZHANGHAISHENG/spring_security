@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.server.authentication.WebFilterChainServerAuthenticationSuccessHandler;
 
 @Configuration
 @EnableResourceServer
@@ -79,6 +80,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http.addFilterBefore(myAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         //todo:注意：spring-security formlogin其实就是一个登录页加上一个提交action组成的，
         // 所以在我们的app登录的时候我们只要提交的action，不要跳转到登录页
+
         http.formLogin()
                 //登录页面，app用不到
                 //.loginPage("/authentication/login")
